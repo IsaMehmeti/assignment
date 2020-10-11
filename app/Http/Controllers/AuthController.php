@@ -5,19 +5,20 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
+use DB;
 
 
 class AuthController extends Controller
 {
-    // /**
-    //  * Create a new AuthController instance.
-    //  *
-    //  * @return void
-    //  */
-    // public function __construct()
-    // {
-    //     $this->middleware('auth:api', ['except' => ['login']]);
-    // }
+    /**
+     * Create a new AuthController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['login','register']]);
+    }
     // /**
     //  * Get a JWT via given credentials.
     //  *
@@ -51,7 +52,7 @@ class AuthController extends Controller
      
     public function logout()
     {
-        auth()->logout();
+        auth()->invalidate();
 
         return response()->json(['message' => 'Successfully logged out']);
     }
@@ -78,7 +79,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'expires_in' => auth()->factory()->getTTL() * 460
         ]);
     }
 
@@ -90,7 +91,7 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required',
         ]);
-
+        
         try {
 
             $user = new User;
@@ -100,6 +101,13 @@ class AuthController extends Controller
             $user->password = app('hash')->make($plainPassword);
 
             $user->save();
+             DB::table('user_details')->insert(
+      array(
+            'user_id' => $user->id, 
+            'city' => $request->input('city'),
+            'age' => $request->input('age'),
+            )
+              );
 
             //return successful response
             return response()->json(['user' => $user, 'message' => 'CREATED'], 201);
@@ -109,5 +117,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'User Registration Failed!'], 409);
         }
     }
+     public function allUsers()
+    {
+         return response()->json(['users' =>  User::all()], 200);
+    }
+
 
 }
