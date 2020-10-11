@@ -13,30 +13,12 @@
 |
 */
 
-// $router->get('/', function ()
-// {
-// 	 return \Illuminate\Support\Str::random(32);
-// });
-// $router->group([
 
-//     'middleware' => 'api',
-//     'prefix' => 'auth'
-
-// ], function ($router) {
-
-// $router->post('login', 'AuthController@login');
-// $router->post('logout', 'AuthController@logout');
-// $router->post('refresh', 'AuthController@refresh');
-// $router->post('me', 'AuthController@me');
-   
-// });
 $router->group(['prefix' => 'api'], function () use ($router) {
    $router->post('register', 'AuthController@register');
    $router->post('login', 'AuthController@login');
    $router->post('logout', 'AuthController@logout');
-   // $router->get('profile', 'UserController@profile');
-   // $router->get('users/{id}', 'UserController@singleUser');
-   // $router->get('users', 'UserController@allUsers');
+
 
 
 
