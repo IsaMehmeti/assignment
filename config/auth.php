@@ -7,24 +7,26 @@ return [
     ],
 
     'guards' => [
-        'admins' => [
-        'driver' => 'jwt',
-        'provider' => 'admins',
-        ],
+
         'api' => [
             'driver' => 'jwt',
             'provider' => 'users',
+        ], 
+         'admins' => [
+            'driver' => 'jwt',
+            'provider' => 'admins',
         ],
+        
     ],
 
     'providers' => [
-        'admins' => [
-        'driver' => 'eloquent',
-        'model' => App\Admin::class,
-     ],
         'users' => [
             'driver' => 'eloquent',
-            'model' => \App\Models\User::class
-        ]
+            'model' => App\Models\User::class
+        ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+     ]
     ]
 ];

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
 use App\Models\Admin;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -16,7 +18,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth', ['except' => ['login','register']]);
+        $this->middleware('jwt.auth', ['except' => ['login','register']]);
     }
 	public function register(Request $request)
 	{
@@ -28,6 +30,8 @@ class AuthController extends Controller
         ]);
         
         try {
+            Config::set('jwt.user', "App\Models\Admin");
+            Config::set('auth.providers.users.model', \App\Models\Admin::class);
             $user = new Admin;
             $user->name = $request->input('name');
             $user->email = $request->input('email');
@@ -43,9 +47,14 @@ class AuthController extends Controller
             return response()->json(['message' => 'User Registration Failed!'], 409);
         }
 	}
-
+     public function me()
+    {   
+        return response()->json(auth()->user());
+    }
 	    public function login()
     {
+        Config::set('jwt.user', "App\Models\Admin");
+        Config::set('auth.providers.users.model', \App\Models\Admin::class);
         $credentials = request(['email', 'password']);
 
         if (! $token = auth()->attempt($credentials)) {

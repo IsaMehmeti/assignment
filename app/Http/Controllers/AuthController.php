@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserDetails;
+use Illuminate\Support\Facades\Config;
 use DB;
 
 
@@ -18,7 +19,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth', ['except' => ['login','register']]);
+        $this->middleware('jwt.auth', ['except' => ['login','register']]);
     }
     // /**
     //  * Get a JWT via given credentials.
@@ -26,7 +27,7 @@ class AuthController extends Controller
     //  * @return \Illuminate\Http\JsonResponse
     //  */
     public function login()
-    {
+    {  
         $credentials = request(['email', 'password']);
 
         if (! $token = auth()->attempt($credentials)) {
@@ -42,7 +43,9 @@ class AuthController extends Controller
     //  * @return \Illuminate\Http\JsonResponse
     //  */
     public function me()
-    {
+    {  
+        // Config::set('jwt.user', "App\Models\Admin");
+        // Config::set('auth.providers.admins.model', App\Models\User::class);
         return response()->json(auth()->user());
     }
 
@@ -94,7 +97,8 @@ class AuthController extends Controller
         ]);
         
         try {
-
+            Config::set('jwt.user', "App\Models\User");
+            Config::set('auth.providers.users.model', App\Models\User::class);
             $user = new User;
             $user->name = $request->input('name');
             $user->email = $request->input('email');
@@ -111,7 +115,7 @@ class AuthController extends Controller
             $details = $user->user_details;
             
             //return successful response
-            return response()->json(['user' => $user, 'message' => 'CREATED', 'details' => $details], 201);
+            return response()->json(['user' => $user, 'message' => 'CREATED'], 201);
 
         } catch (\Exception $e) {
             //return error message
