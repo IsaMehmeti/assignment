@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UserDetails;
 use DB;
 
 
@@ -40,10 +41,10 @@ class AuthController extends Controller
     //  *
     //  * @return \Illuminate\Http\JsonResponse
     //  */
-    // public function me()
-    // {
-    //     return response()->json(auth()->user());
-    // }
+    public function me()
+    {
+        return response()->json(auth()->user());
+    }
 
     // *
     //  * Log the user out (Invalidate the token).
@@ -52,20 +53,20 @@ class AuthController extends Controller
      
     public function logout()
     {
-        auth()->invalidate();
+        auth()->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
     }
 
-    // /**
-    //  * Refresh a token.
-    //  *
-    //  * @return \Illuminate\Http\JsonResponse
-    //  */
-    // public function refresh()
-    // {
-    //     return $this->respondWithToken(auth()->refresh());
-    // }
+    /**
+     * Refresh a token.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function refresh()
+    {   
+        return $this->respondWithToken(auth()->refresh());
+    }
 
     // /**
     //  * Get the token array structure.
@@ -99,18 +100,18 @@ class AuthController extends Controller
             $user->email = $request->input('email');
             $plainPassword = $request->input('password');
             $user->password = app('hash')->make($plainPassword);
+            $user->save(); 
 
-            $user->save();
-             DB::table('user_details')->insert(
-      array(
-            'user_id' => $user->id, 
-            'city' => $request->input('city'),
-            'age' => $request->input('age'),
-            )
-              );
+            $userdetails = new UserDetails;
+            $userdetails->user_id = $user->id;
+            $userdetails->city = $request->input('city');
+            $userdetails->age = $request->input('age');
+            $userdetails->save();
 
+            $details = $user->user_details;
+            
             //return successful response
-            return response()->json(['user' => $user, 'message' => 'CREATED'], 201);
+            return response()->json(['user' => $user, 'message' => 'CREATED', 'details' => $details], 201);
 
         } catch (\Exception $e) {
             //return error message

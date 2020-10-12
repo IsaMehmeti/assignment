@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UserDetails extends Migration
+class CreateAdminsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,14 @@ class UserDetails extends Migration
      */
     public function up()
     {
-     Schema::create('user_details', function (Blueprint $table) {
-     $table->id();
-     $table->unsignedBigInteger('user_id')->nullable();    
-     $table->string('city')->nullable();    
-     $table->integer('age')->nullable(); 
-    $table->timestamps();   
-    });
+        Schema::create('admins', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique()->notNullable();
+            $table->string('password');
+            $table->timestamps();
+        });
     }
-
 
     /**
      * Reverse the migrations.
@@ -30,6 +29,6 @@ class UserDetails extends Migration
      */
     public function down()
     {
-         Schema::dropIfExists('user_details');
+        Schema::dropIfExists('admins');
     }
 }
