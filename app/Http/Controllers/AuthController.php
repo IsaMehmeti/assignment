@@ -97,8 +97,6 @@ class AuthController extends Controller
         ]);
         
         try {
-            Config::set('jwt.user', "App\Models\User");
-            Config::set('auth.providers.users.model', App\Models\User::class);
             $user = new User;
             $user->name = $request->input('name');
             $user->email = $request->input('email');

@@ -18,7 +18,9 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('jwt.auth', ['except' => ['login','register']]);
+        Config::set('auth.providers.users.model',Admin::class);
+        Config::set('auth.providers', ['users' => ['driver' => 'eloquent','model' => Admin::class,]]);    
+        // $this->middleware('jwt.auth', ['except' => ['login','register']]);
     }
 	public function register(Request $request)
 	{
@@ -30,8 +32,8 @@ class AuthController extends Controller
         ]);
         
         try {
-            Config::set('jwt.user', "App\Models\Admin");
-            Config::set('auth.providers.users.model', \App\Models\Admin::class);
+            // Config::set('jwt.user', "App\Models\Admin");
+            // Config::set('auth.providers.users.model', \App\Models\Admin::class);
             $user = new Admin;
             $user->name = $request->input('name');
             $user->email = $request->input('email');
@@ -53,8 +55,8 @@ class AuthController extends Controller
     }
 	    public function login()
     {
-        Config::set('jwt.user', "App\Models\Admin");
-        Config::set('auth.providers.users.model', \App\Models\Admin::class);
+        // Config::set('jwt.user', "App\Models\Admin");
+        // Config::set('auth.providers.users.model', \App\Models\Admin::class);
         $credentials = request(['email', 'password']);
 
         if (! $token = auth()->attempt($credentials)) {
